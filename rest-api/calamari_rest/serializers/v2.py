@@ -176,6 +176,22 @@ class CrushRuleSerializer(serializers.Serializer):
     osd_count = serializers.IntegerField(help_text="Number of OSDs which are used for data placement")
 
 
+class CrushNodeSerializer(serializers.Serializer):
+    class Meta:
+        fields = ('bucket-type', 'bucket-name', 'id', 'weight', 'alg', 'hash', 'item')
+
+    bucket_type = serializers.Field(help_text="Buckets facilitate a hierarchy of nodes and leaves. Node (or non-leaf) buckets typically represent physical locations in a hierarchy. e.g. host, rack, datacenter")
+    bucket_name = serializers.Field(help_text="unique name")
+    id = serializers.IntegerField(help_text="unique ID expressed as a negative integer (optional)")
+    weight = serializers.FloatField(help_text="the relative capacity/capability of the item(s)")
+    alg = serializers.ChoiceField(help_text="bucket algorithm", choices=('straw', 'uniform', 'list', 'tree'), default='straw')
+    _hash = serializers.IntegerField(help_text="hash algorithm", default=0)
+    item = serializers.Field(help_text="A bucket may have one or more items. The items may consist of node buckets or leaves. Items may have a weight that reflects the relative weight of the item.")
+
+
+CrushNodeSerializer.base_fields['hash'] = CrushNodeSerializer.base_fields['_hash']
+
+
 class CrushRuleSetSerializer(serializers.Serializer):
     class Meta:
         fields = ('id', 'rules')
